@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = "us-east-1"
+        ECR_REPOSITORY = "spring-rds-demo"
+        K8S_NAMESPACE = "spring-rds"
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/chirag21-dev/Spring-boot-applicaton-with-rds.git']])
+            }
+        }
+
+        stage('Build and Test') {
+            steps {
+                sh '''
+                    chmod +x mvnw
+                    ./mvnw clean verify
+                '''
+            }
+        }
